@@ -44,28 +44,42 @@ body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opa
 .listen-intro{justify-content:flex-start;margin-bottom:44px}.listening{position:relative;overflow:hidden}.listening>*{position:relative;z-index:1}
 .listening::before{content:"";position:absolute;inset:-10%;z-index:0;opacity:0;transition:opacity 1s;pointer-events:none;background:radial-gradient(45% 55% at var(--gx,50%) var(--gy,55%),color-mix(in srgb,var(--glow,#fff) 75%,transparent),transparent 72%)}
 .focus .listening{background:#08080b}.focus.playing .listening::before{opacity:1;animation:breathe 4s ease-in-out infinite}@keyframes breathe{50%{transform:scale(1.12);opacity:.7}}
-main>section:not(.listening){transition:filter .9s ease}.focus main>section:not(.listening){filter:brightness(.28) saturate(.5)}
+/* dim the room: every section except the listening one (works inside and outside .stage) */
+main section:not(.listening){transition:filter .9s ease}.focus main section:not(.listening){filter:brightness(.28) saturate(.5)}
 .flip{transition:transform .5s cubic-bezier(.3,.7,.2,1)}.focus .album.on .flip{transform:translateY(-10px) scale(1.04)}
 @media(prefers-reduced-motion:reduce){.focus.playing .listening::before{animation:none}}
 .about{position:relative;padding:0;gap:0;align-items:stretch;align-content:stretch;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
 .lead-photo{margin:0;position:relative;min-height:70vh;border-right:2px solid var(--ink);overflow:hidden}.lead-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%}
 .about-copy{align-self:center;max-width:none;padding:clamp(150px,20vh,200px) clamp(24px,5vw,90px) clamp(48px,8vh,100px) clamp(28px,5vw,90px)}.about-copy small{max-width:34em}
 @media(max-width:900px){.about{grid-template-columns:1fr}.lead-photo{min-height:0;aspect-ratio:4/5;max-height:78vh;border-right:0;border-bottom:2px solid var(--ink)}.about-copy{padding:40px 5% 60px}}
-/* the vinyl floats with you through the green section and lets go where the black section starts */
 .lead-photo{grid-area:1/1}.about-copy{grid-area:1/2}@media(max-width:900px){.about-copy{grid-area:2/1}}
+/* the vinyl floats with you through the green and black sections: its rail lives in .stage, which wraps both */
+.stage{position:relative}
+body.tk-dock #deck{top:calc(var(--navh) + 16px)}
+/* photo column: the figure was sitting in a wrapper div that didn't stretch, so it stopped at 70vh and left green underneath. Let the wrapper fill the row and the figure fill the wrapper. */
+.about>div:first-child{display:flex;flex-direction:column;min-width:0}
+.lead-photo{flex:1 1 auto}
+.lead-photo img{object-position:35% 70%}/* x% y%: raise y to show more of the top of the photo, lower it to show more of the bottom */
+@media(max-width:900px){.lead-photo{flex:none}.lead-photo img{object-position:50% 40%}}
 </style></head><body id="home">
 <div id="gate"><h1>hasan.</h1><p class="g-sub">Put the record on and the door opens.</p><div class="g-tt"><button type="button" class="tt" id="tt" aria-pressed="false" aria-label="Put the record on: plays the opening song"><video id="vinyl" poster="vinyl-poster.jpg" muted playsinline preload="auto" aria-hidden="true"><source src="vinyl.mp4" type="video/mp4"><source src="vinyl.webm" type="video/webm"></video></button><p class="tip" id="tip">↑ click the record to put it on</p></div><button class="go" id="enter">enter without sound ↗</button></div>
 <audio id="open" src="audio/opening.mp3" loop preload="auto"></audio><button id="mute" aria-label="Mute or unmute the opening music">♪ sound on</button>
 <nav><a href="#home" class="logo" aria-label="hasan, back to top"><span>ha</span><span>san.</span></a><div class="navlinks"><a href="#about">about</a><a href="#music">music</a><a href="#shop">shop</a><a href="#epk">EPK</a><a href="#touch" class="pill">stay in touch ↗</a></div></nav>
 <div class="tkwrap"><div class="ticker" id="ticker" aria-label="Thoughts from Hasan"><div class="strip" id="strip"></div></div></div>
 <main>
+<div class="stage" id="stage">
 
 <section class="chapter about" id="about"><div><figure class="lead-photo"><img src="hasan.jpg" alt="Hasan in a patterned shirt, eyes closed, hand raised in a wave"></figure></div><div class="about-copy">hello, kind stranger!
 <small>i am Hasan. a singer-songwriter, composer and very-soon-to-be producer, currently writing sad songs because i never learnt how to be vulnerable normally. i won’t pretend like i know what kind of music it is that I make, but out of the 6000+ genres that the streaming platforms have invented, mine usually comes with the prefix ‘indie’, so folk, pop, alternative, and a mish mash of other genres that i steal from while i write about love (no shit, sherlock), the awkwardness of living and hope in all its forms.</small>
 <small>when I'm not making music, I'm posing as a multi-disciplinary artist juggling multiple hats on a film set or tanking at a standup comedy gig or having a mind-numbing, debilitating breakdown over all my life decisions.</small>
-<small>come, explore my little corner on the world wide web instead of doomscrolling on that god forsaken app, take what you like and maybe say hi. I don’t bite . . . unless, you ask . . . i mean i still won’t . . . i have a girlfriend . . . please behave. . . . .</small></div><div class="deck-rail"><button id="deck" hidden aria-pressed="false" aria-label="Play or pause the opening song"><video id="vinyl2" poster="vinyl-poster.jpg" muted playsinline preload="auto" aria-hidden="true"><source src="vinyl.mp4" type="video/mp4"><source src="vinyl.webm" type="video/webm"></video></button></div></section>
+<small>come, explore my little corner on the world wide web instead of doomscrolling on that god forsaken app, take what you like and maybe say hi. I don’t bite . . . unless, you ask . . . i mean i still won’t . . . i have a girlfriend . . . please behave. . . . .</small></div></section>
 <section class="chapter listening" id="music"><div class="listen-intro"><button type="button" class="focus-toggle" id="focus" aria-pressed="false">◐ Dim the room</button></div><div class="albums" id="tracks"></div>
 </section>
+
+<div class="deck-rail" id="rail"><button id="deck" hidden aria-pressed="false" aria-label="Play or pause the opening song"><video id="vinyl2" poster="vinyl-poster.jpg" muted playsinline preload="auto" aria-hidden="true"><source src="vinyl.mp4" type="video/mp4"><source src="vinyl.webm" type="video/webm"></video></button></div>
+
+</div><!-- /stage -->
+
 <section class="interlude"><p>Maybe the song won’t fix the evening. <em>Maybe it can keep you company through it.</em></p></section>
 <section class="chapter shop" id="shop"><div class="shop-head"><p>Music to own, directly from me. Zines and other objects will turn up here when they’re ready.</p></div><div class="shop-grid"><article class="shop-card"><span class="top">01 / download</span><strong>Own the<br>songs</strong><div><p>Each song is ₹50. Listen to a preview above, then buy the full-quality file.</p><a href="#music">Pick a song ↗</a></div></article><article class="shop-card"><span class="top">02 / generosity</span><strong>Support<br>the artist</strong><div><p>Chip in directly if the work has kept you company.</p><a href="#" data-k="support">Support ↗</a></div></article></div></section>
 <section class="chapter epk" id="epk"><div><h2>Press<br>stuff.</h2><p>Bio, portraits, music and contact details in one kit for media and organisers.</p></div><a class="arrow-link" href="epk.html">Open the EPK <span>↗</span></a></section>
@@ -141,4 +155,11 @@ function tkScroll(){const want=aboutEl.getBoundingClientRect().bottom<=navEl.off
 addEventListener('scroll',tkScroll,{passive:true});tkScroll();
 /* scroll reveal */
 if(!matchMedia('(prefers-reduced-motion:reduce)').matches&&'IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.chapter>*:not(#deck),.interlude p').forEach(el=>{el.classList.add('rv');io.observe(el)})}
+
+/* the vinyl rides through green + black and parks just above the albums */
+const stage=$('#stage'),rail=$('#rail'),albumsEl=$('#tracks');
+function sizeRail(){rail.style.bottom=(stage.getBoundingClientRect().bottom-albumsEl.getBoundingClientRect().top)+'px'}
+sizeRail();['resize','load'].forEach(e=>addEventListener(e,sizeRail));
+document.fonts&&document.fonts.ready.then(sizeRail);
+new ResizeObserver(sizeRail).observe(stage);
 </script></body></html>
