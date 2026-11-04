@@ -158,7 +158,8 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches&&'IntersectionObserver
 
 /* the vinyl rides through green + black and parks just above the albums */
 const stage=$('#stage'),rail=$('#rail'),albumsEl=$('#tracks');
-function sizeRail(){rail.style.bottom=(stage.getBoundingClientRect().bottom-albumsEl.getBoundingClientRect().top)+'px'}
+/* offsetTop ignores transforms; getBoundingClientRect was picking up the 30px scroll-reveal offset on the albums and letting the vinyl overlap the 4th cover */
+function sizeRail(){const musicEl=$('#music'),top=musicEl.offsetTop+albumsEl.offsetTop;rail.style.bottom=(stage.offsetHeight-top+24)+'px'}
 sizeRail();['resize','load'].forEach(e=>addEventListener(e,sizeRail));
 document.fonts&&document.fonts.ready.then(sizeRail);
 new ResizeObserver(sizeRail).observe(stage);
