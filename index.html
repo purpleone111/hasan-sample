@@ -170,12 +170,11 @@ function glow(){const on=cur>-1&&!player.paused;document.body.classList.toggle('
 const tk=$('#ticker'),navEl=document.querySelector('nav');/* px scrolled before it may drop; raise it to wait until the green block is passed */
 const setNav=()=>document.documentElement.style.setProperty('--navh',navEl.offsetHeight+'px');setNav();addEventListener('resize',setNav);addEventListener('load',setNav);
 let docked=false,lastY=scrollY;const aboutEl=document.getElementById('about'),touchEl=document.getElementById('touch');/* the ticker sits under the nav while the green section is on screen, and falls to the bottom once the green section has scrolled up to it */
-/* ticker: starts under the nav. It drops to the bottom of the screen when you scroll down past the green section and stays there. It only rises back to the nav when you scroll UP out of the red "stay in touch" section, or when the green section is back on screen. */
+/* ticker: starts under the nav, drops to the bottom of the screen once you scroll past the green section, stays there, and only rises back to the nav when you reach the very bottom of the page (or are back at the green section). */
 function setDock(v){if(v!==docked){docked=v;tk.classList.toggle('dock',v);document.body.classList.toggle('tk-dock',v);setDeck()}}
-function tkScroll(){const y=scrollY,down=y>lastY,up=y<lastY;lastY=y;const ab=aboutEl.getBoundingClientRect().bottom,greenGone=ab<=navEl.offsetHeight+tk.offsetHeight+4;
-if(ab>innerHeight*.75){setDock(false);return}
-if(down&&greenGone)setDock(true);
-else if(up&&touchEl.getBoundingClientRect().top>=innerHeight)setDock(false)}
+function tkScroll(){const ab=aboutEl.getBoundingClientRect().bottom,greenGone=ab<=navEl.offsetHeight+tk.offsetHeight+4,atBottom=scrollY+innerHeight>=document.documentElement.scrollHeight-4;
+if(atBottom||ab>innerHeight*.75){setDock(false);return}
+if(greenGone)setDock(true)}
 addEventListener('scroll',tkScroll,{passive:true});tkScroll();
 /* scroll reveal */
 if(!matchMedia('(prefers-reduced-motion:reduce)').matches&&'IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.chapter>*:not(#deck),.interlude p').forEach(el=>{el.classList.add('rv');io.observe(el)})}
